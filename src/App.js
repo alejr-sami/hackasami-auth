@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import useAuthContext from "./hooks/useAuth";
+import useStepHistory from "./hooks/useStepHistory";
 
 function App() {
+  const {
+    signIn,
+    loading: authLoading,
+    token,
+    error: authError,
+  } = useAuthContext();
+  const { error, history, loading, totalPoints } = useStepHistory();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <button onClick={signIn} disabled={!!token}>
+        {!!token ? "Logado" : "login"}
+      </button>
+      {authLoading && <p>fazendo login</p>}
+      {authError && <p>erro de login</p>}
+      {error && <p>erro api de passos</p>}
+      <p>total de pontos: {totalPoints}</p>
+      {loading && <p>carregando pontos</p>}
+
+      <ul>
+        {history.map(({ initialDate, finalDate, steps, points }) => (
+          <li key={+initialDate}>
+            {initialDate.toLocaleDateString()} - {steps} passos | {points}{" "}
+            pontos
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
